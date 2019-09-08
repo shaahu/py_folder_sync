@@ -25,9 +25,3 @@ def add_new_folder_pair():
             print("Operation Cancelled!!!")
     else:
         print("Operation Cancelled!!!")
-
-
-def view_folders_pair_list():
-    print(display_pair_folders())
-    ch = int(input("Choose pair: "))
-    check_sync(ch)

@@ -1,4 +1,5 @@
-from add_folder_pair import add_new_folder_pair, view_folders_pair_list
+from add_folder_pair import add_new_folder_pair
+from view_folder_pair import view_folders_pair_list
 
 
 def init():

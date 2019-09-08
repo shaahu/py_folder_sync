@@ -6,6 +6,8 @@ import json
 
 from constant import PAIR_STORAGE_JSON, PAIR_NAME, PRIMARY_PATH, SECONDARY_PATH
 
+MAX_CELL_LENGTH = 96
+
 
 def create_file_if_not_exist():
     try:
@@ -68,16 +70,62 @@ def display_pair_folders():
     return t.get_string(sort_key=operator.itemgetter(1, 0), sortby="#")
 
 
+def get_files_list(loc):
+    temp = []
+    for path, subdirs, files in os.walk(loc):
+        for name in files:
+            temp.append(os.path.join(path.replace(loc, ""), name))
+        for dir in subdirs:
+            temp.append(os.path.join(path.replace(loc, ""), dir))
+    return temp
+
+
+def format_comment(comment, max_line_length):
+    # accumulated line length
+    ACC_length = 0
+    words = comment.split(" ")
+    formatted_comment = ""
+    for word in words:
+        if ACC_length + (len(word) + 1) <= max_line_length:
+            formatted_comment = formatted_comment + word + " "
+            ACC_length = ACC_length + len(word) + 1
+        else:
+            # append a line break, then the word and a space
+            formatted_comment = formatted_comment + "\n" + word + " "
+            ACC_length = len(word) + 1
+    return formatted_comment
+
+
+def ask_user(items_to_copy, items_to_delete):
+    t = PrettyTable(
+        ['Files to be copies to secondary folder', format_comment(", \n".join(items_to_copy), MAX_CELL_LENGTH)])
+    t.add_row(
+        ['Files to be deleted from secondary folder', format_comment(", \n".join(items_to_delete), MAX_CELL_LENGTH)])
+    print(t)
+
+
+def start_syncing(items_to_copy, items_to_delete, key):
+    pass
+
+
 def check_sync(key):
     data = get_storage_file()
     if key not in data:
         print("Invalid pair!")
     else:
-        primary = data[key][PRIMARY_PATH]
-        secondary = data[key][SECONDARY_PATH]
-        print(primary)
-        print(secondary)
+        items_to_copy = list(
+            set(get_files_list(data[key][PRIMARY_PATH])) - set(get_files_list(data[key][SECONDARY_PATH])))
+        items_to_delete = list(
+            set(get_files_list(data[key][SECONDARY_PATH])) - set(get_files_list(data[key][PRIMARY_PATH])))
+
+        if not items_to_copy and not items_to_delete:
+            print("Already Sync!")
+
+        else:
+            res = ask_user(items_to_copy, items_to_delete)
+            if res:
+                start_syncing(items_to_copy, items_to_delete, key)
 
 
 if __name__ == '__main__':
-    check_sync("1")
+    check_sync("5")

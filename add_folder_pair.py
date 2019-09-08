@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 
-from helper import add_folder_pair_to_storage, display_pair_folders, check_sync
+from helper import add_folder_pair_to_storage, display_folder_pair, check_sync
 
 
 def add_new_folder_pair():

@@ -9,9 +9,9 @@ def init():
         print("1. Add New Folder Pair")
         print("2. Sync Folder Pair")
         print("3. Delete Folder Pair")
-        print("9. Exit")
+        print("0. Exit")
         ch = int(input("Enter Choice: "))
-        if ch == 9:
+        if ch == 0:
             break
         if ch == 1:
             add_new_folder_pair()

@@ -8,7 +8,7 @@ from prettytable import PrettyTable
 import json
 from shutil import copy, rmtree, copyfile
 
-from constant import PAIR_STORAGE_JSON, PAIR_NAME, PRIMARY_PATH, SECONDARY_PATH
+from constant import PAIR_STORAGE_JSON, PAIR_NAME, PRIMARY_PATH, SECONDARY_PATH, STORAGE_DIRECTORY
 
 MAX_CELL_LENGTH = 96
 
@@ -16,6 +16,7 @@ MAX_CELL_LENGTH = 96
 def create_file_if_not_exist():
     try:
         if not os.path.exists(PAIR_STORAGE_JSON):
+            os.mkdir(STORAGE_DIRECTORY)
             open(PAIR_STORAGE_JSON, "w")
     except Exception as e:
         print(e)
@@ -26,7 +27,10 @@ def check_if_path_exist(path):
 
 
 def get_storage_file():
-    return json.loads(open(PAIR_STORAGE_JSON, "r").read())
+    try:
+        return json.loads(open(PAIR_STORAGE_JSON, "r").read())
+    except:
+        return []
 
 
 def write_to_storage(incoming):
@@ -60,6 +64,7 @@ def generatekey():
 
 
 def add_folder_pair_to_storage(pair_name, primary_path, secondary_path):
+    create_file_if_not_exist()
     try:
         element = {PAIR_NAME: pair_name, PRIMARY_PATH: primary_path, SECONDARY_PATH: secondary_path}
         path_dict = {generatekey(): element}
@@ -71,13 +76,17 @@ def add_folder_pair_to_storage(pair_name, primary_path, secondary_path):
 
 
 def display_folder_pair():
-    pairs = get_storage_file()
-    t = PrettyTable(['#', 'Name', 'Primary', 'Secondary'])
-    if pairs:
-        for key in pairs:
-            t.add_row([key, pairs[key][PAIR_NAME], pairs[key][PRIMARY_PATH], pairs[key][SECONDARY_PATH]])
-            return t.get_string(sort_key=operator.itemgetter(1, 0), sortby="#")
-    else:
+    create_file_if_not_exist()
+    try:
+        pairs = get_storage_file()
+        t = PrettyTable(['#', 'Name', 'Primary', 'Secondary'])
+        if pairs:
+            for key in pairs:
+                t.add_row([key, pairs[key][PAIR_NAME], pairs[key][PRIMARY_PATH], pairs[key][SECONDARY_PATH]])
+                return t.get_string(sort_key=operator.itemgetter(1, 0), sortby="#")
+        else:
+            return []
+    except:
         return []
 
 

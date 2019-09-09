@@ -83,7 +83,7 @@ def display_folder_pair():
         if pairs:
             for key in pairs:
                 t.add_row([key, pairs[key][PAIR_NAME], pairs[key][PRIMARY_PATH], pairs[key][SECONDARY_PATH]])
-                return t.get_string(sort_key=operator.itemgetter(1, 0), sortby="#")
+            return t.get_string(sort_key=operator.itemgetter(1, 0), sortby="#")
         else:
             return []
     except:
@@ -135,15 +135,18 @@ def copytree(src, dst, total_item, flag):
                 count += 1
 
 
-def delete_file(path, item):
+def delete_file(path, item, total):
+    del_counter = 1
     item = item.replace("\\", "/")
     if check_if_path_exist(path + "/" + item):
         try:
             os.remove(path + "/" + item)
-            print(path + "/" + item)
+            print("Deleting (" + str(del_counter) + " of " + str(len(total)) + ") ==>" + item)
+            del_counter += 1
         except:
             rmtree(path + "/" + item)
-            print(path + "/" + item)
+            print("Deleting (" + str(del_counter) + " of " + str(len(total)) + ") ==>" + item)
+            del_counter += 1
 
 
 def start_full_syncing(items_to_copy, items_to_delete, key):
@@ -153,7 +156,7 @@ def start_full_syncing(items_to_copy, items_to_delete, key):
     if items_to_copy:
         copytree(src_path, dest_path, items_to_copy, True)
     for item in items_to_delete:
-        delete_file(dest_path, item)
+        delete_file(dest_path, item, items_to_delete)
     print("Syncing Successful")
 
 
@@ -170,7 +173,7 @@ def delete_only(items_to_delete, key):
     data = get_storage_file()
     dest_path = data[key][SECONDARY_PATH]
     for item in items_to_delete:
-        delete_file(dest_path, item)
+        delete_file(dest_path, item, items_to_delete)
     print("Syncing Successful")
 
 
@@ -208,10 +211,10 @@ def delete_json_element(key):
         yn = input("Are you sure you want delete pair (" + data[key][PAIR_NAME] + ") yes/no? ")
         print(yn)
         if yn == 'y' or yn == 'yes':
+            print("'" + data[key][PAIR_NAME] + "' deleted")
             del data[key]
             with open(PAIR_STORAGE_JSON, 'w') as data_file:
                 json.dump(data, data_file)
-                print(key + " deleted")
         if yn == 'n' or yn == 'no':
             print("Aborted!")
             pass

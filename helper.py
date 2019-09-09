@@ -140,8 +140,10 @@ def delete_file(path, item):
     if check_if_path_exist(path + "/" + item):
         try:
             os.remove(path + "/" + item)
+            print(path + "/" + item)
         except:
             rmtree(path + "/" + item)
+            print(path + "/" + item)
 
 
 def start_full_syncing(items_to_copy, items_to_delete, key):
